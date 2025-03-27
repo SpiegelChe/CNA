@@ -66,15 +66,17 @@ while True:
   # and store it in the variable: message_bytes
   # ~~~~ INSERT CODE ~~~~
   message_bytes = b''
-  while True:
-    data = clientSocket.recv(1)  # 1 byte is received at a time due to telnet sending 1 char at a time
-    if not data:
-      break
-    message_bytes += data
-    if message_bytes.endswith(b'\r\n\r\n'):  # end request when detecting empty line
-      break
-  if not message_bytes:
-    print("Empty request")
+  clientSocket.settimeout(5.0)
+  try:
+    while True:
+      data = clientSocket.recv(1)  # 1 byte is received at a time due to telnet sending 1 char at a time
+      if not data:
+        break
+      message_bytes += data
+      if message_bytes.endswith(b'\r\n\r\n'):  # end request when detecting empty line
+        break
+  except socket.timeout:
+    print("Request timeout")
     clientSocket.close()
     continue
   # ~~~~ END CODE INSERT ~~~~
@@ -193,26 +195,50 @@ while True:
       # Get the response from the origin server
       # ~~~~ INSERT CODE ~~~~
       response = b''
-      while True:
-        data = originServerSocket.recv(BUFFER_SIZE)
-        if not data:
-          break
-        response += data
+      try:
+        originServerSocket.settimeout(10)
+        while True:
+          data = originServerSocket.recv(BUFFER_SIZE)
+          if not data:
+            break
+          response += data
+          # Check if received full headers
+          if b'\r\n\r\n' in response and (b'Content-Length:' in response or
+                                          b'Transfer-Encoding: chunked' in response or
+                                          response.startswith((b'HTTP/1.1 301', b'HTTP/1.1 302'))):
+            break
+      except socket.timeout:
+        print("Origin server response timeout")
       # ~~~~ END CODE INSERT ~~~~
 
       # Handle redirects (301 and 302)
       if response.startswith(b'HTTP/1.1 301') or response.startswith(b'HTTP/1.1 302'):
-        redirect_location = re.search(b'Location: (.*)\r\n', response).group(1).decode('utf-8')
-        print(f'Redirecting to: {redirect_location}')
-        # Update URI and hostname for the new location
-        URI = redirect_location
-        hostname = re.sub('^(/?)http(s?)://', '', URI, count=1).split('/', 1)[0]
-        resource = '/' + URI.split('/', 1)[1] if '/' in URI else '/'
-        # Retry the request with the new location
-        continue
+        try:
+          redirect_location = re.search(br'Location: (.*?)\r\n', response).group(1).decode('utf-8')
+          print(f'Redirecting to: {redirect_location}')
+
+          # Close existing connection
+          originServerSocket.close()
+
+          # Parse new location
+          URI = redirect_location
+          URI = re.sub('^(/?)http(s?)://', '', URI, count=1)
+          resourceParts = URI.split('/', 1)
+          hostname = resourceParts[0]
+          resource = '/' + resourceParts[1] if len(resourceParts) > 1 else '/'
+
+          # Send redirect response to client
+          clientSocket.sendall(response)
+          clientSocket.close()
+          continue
+        except Exception as e:
+          print(f'Redirect handling failed: {str(e)}')
+          clientSocket.sendall(b'HTTP/1.1 502 Bad Gateway\r\n\r\n')
+          clientSocket.close()
+          continue
 
       # Handle Cache-Control header (max-age)
-      cache_control = re.search(b'Cache-Control: max-age=(\d+)', response)
+      cache_control = re.search(br'Cache-Control: max-age=(\d+)', response)
       if cache_control:
         max_age = int(cache_control.group(1))
         print(f'Cache-Control: max-age={max_age}')
