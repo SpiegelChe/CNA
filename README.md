@@ -29,14 +29,13 @@
     2 telnet localhost 8080
         2.1 GET http://httpbin.org/cache/0 HTTP/1.1
         2.2 GET http://httpbin.org/cache/3600 HTTP/1.1
-
+---
 ### Problem Fixing log
-connect using telnet with error: after client typing 1 letter, the connection closed automatically.
+connect using telnet with error: Telnet interacts character by character, after client typing 1 letter, the char will be sent to server. Fixed by finishing receiving data when empty line detected.
 
-connect using with error: "curl: (52) Empty reply from server"
+connect using curl with error: "curl: (52) Empty reply from server". Fixed by redirecting and checking full headers.
     
-running script with error: "Proxy.py:241: SyntaxWarning: invalid escape sequence '\d'". Fixed.
-        ————>using raw string to avoid escape problem: br''
+running script with error: "Proxy.py:241: SyntaxWarning: invalid escape sequence '\d'". Fixed with raw string to avoid escape problem: br''.
 
 
 
