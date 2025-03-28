@@ -66,7 +66,7 @@ while True:
   # and store it in the variable: message_bytes
   # ~~~~ INSERT CODE ~~~~
   message_bytes = b''
-  clientSocket.settimeout(5.0)
+  clientSocket.settimeout(10)
   try:
     while True:
       data = clientSocket.recv(1)  # 1 byte is received at a time due to telnet sending 1 char at a time
@@ -76,7 +76,7 @@ while True:
       if message_bytes.endswith(b'\r\n\r\n'):  # end request when detecting empty line
         break
   except socket.timeout:
-    print("Request timeout")
+    print("Client request timeout after 10 seconds")
     clientSocket.close()
     continue
   # ~~~~ END CODE INSERT ~~~~
@@ -208,7 +208,10 @@ while True:
                                           response.startswith((b'HTTP/1.1 301', b'HTTP/1.1 302'))):
             break
       except socket.timeout:
-        print("Origin server response timeout")
+        print("Origin server response timeout after 10 seconds")
+        clientSocket.sendall(b'HTTP/1.1 504 Gateway Timeout\r\n\r\n')
+        clientSocket.close()
+        continue
       # ~~~~ END CODE INSERT ~~~~
 
       # Handle redirects (301 and 302)
@@ -242,7 +245,6 @@ while True:
       if cache_control:
         max_age = int(cache_control.group(1))
         print(f'Cache-Control: max-age={max_age}')
-        # Implement cache expiration logic here if needed
 
       # Send the response to the client
       # ~~~~ INSERT CODE ~~~~
