@@ -212,7 +212,6 @@ while True:
         clientSocket.sendall(b'HTTP/1.1 504 Gateway Timeout\r\n\r\n')
         clientSocket.close()
         continue
-      # ~~~~ END CODE INSERT ~~~~
 
       # Handle redirects (301 and 302)
       if response.startswith(b'HTTP/1.1 301') or response.startswith(b'HTTP/1.1 302'):
@@ -245,6 +244,7 @@ while True:
       if cache_control:
         max_age = int(cache_control.group(1))
         print(f'Cache-Control: max-age={max_age}')
+      # ~~~~ END CODE INSERT ~~~~
 
       # Send the response to the client
       # ~~~~ INSERT CODE ~~~~
