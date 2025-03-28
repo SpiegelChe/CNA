@@ -1,5 +1,5 @@
 # CNA HTTP Web Proxy Server
----
+
 ### Start proxy server
     python <directory\filename> <IPaddr> <portnum>
 
@@ -29,7 +29,15 @@
     2 telnet localhost 8080
         2.1 GET http://httpbin.org/cache/0 HTTP/1.1
         2.2 GET http://httpbin.org/cache/3600 HTTP/1.1
+
+### Problem Fixing log
+connect using telnet with error: after client typing 1 letter, the connection closed automatically.
+
+connect using with error: "curl: (52) Empty reply from server"
     
+running script with error: "Proxy.py:241: SyntaxWarning: invalid escape sequence '\d'". Fixed.
+        ————>using raw string to avoid escape problem: br''
+
 
 
         
