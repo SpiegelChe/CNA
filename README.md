@@ -30,7 +30,7 @@
         2.1 GET http://httpbin.org/cache/0 HTTP/1.1
         2.2 GET http://httpbin.org/cache/3600 HTTP/1.1
 ---
-### Problem Fixing log
+### Problem Fixing Log
 
     1. connect using telnet with error: Telnet interacts character by character, after client typing 1 letter, the char will be sent to server and connection ends.
         Fixed by finishing receiving data when empty line detected.
