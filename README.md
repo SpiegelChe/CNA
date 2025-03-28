@@ -1,7 +1,7 @@
 # CNA HTTP Web Proxy Server
 
 ### Start proxy server
-    python <directory\filename> <IPaddr> <portnum>
+    python <directory\filename> <IP_addr> <port_num>
 
 ### I. Test HTTP Status Code 200
     1. curl -iS http://localhost:8080/http://http.badssl.com/
@@ -31,12 +31,17 @@
         2.2 GET http://httpbin.org/cache/3600 HTTP/1.1
 ---
 ### Problem Fixing log
-connect using telnet with error: Telnet interacts character by character, after client typing 1 letter, the char will be sent to server. Fixed by finishing receiving data when empty line detected.
+connect using telnet with error: Telnet interacts character by character, after client typing 1 letter, the char will be sent to server and connection ends.
+    Fixed by finishing receiving data when empty line detected.
+    Tue. 25 Mar 2025
 
-connect using curl with error: "curl: (52) Empty reply from server". Fixed by redirecting and checking full headers.
+connect using curl with error: "curl: (52) Empty reply from server".
+    Fixed by redirecting and checking full headers.
+    Thu. 27 Mar 2025
     
-running script with error: "Proxy.py:241: SyntaxWarning: invalid escape sequence '\d'". Fixed with raw string to avoid escape problem: br''.
-
+running script with error: "Proxy.py:241: SyntaxWarning: invalid escape sequence '\d'".
+    Fixed with raw string to avoid escape problem: br''.
+    Thu. 27 Mar 2025
 
 
         
