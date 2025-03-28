@@ -31,17 +31,18 @@
         2.2 GET http://httpbin.org/cache/3600 HTTP/1.1
 ---
 ### Problem Fixing log
-connect using telnet with error: Telnet interacts character by character, after client typing 1 letter, the char will be sent to server and connection ends.
-    Fixed by finishing receiving data when empty line detected.
-    Tue. 25 Mar 2025
 
-connect using curl with error: "curl: (52) Empty reply from server".
-    Fixed by redirecting and checking full headers.
-    Thu. 27 Mar 2025
+    1. connect using telnet with error: Telnet interacts character by character, after client typing 1 letter, the char will be sent to server and connection ends.
+        Fixed by finishing receiving data when empty line detected.
+        Tue. 25 Mar 2025
+
+    2. connect using curl with error: "curl: (52) Empty reply from server".
+        Fixed by redirecting and checking full headers.
+        Thu. 27 Mar 2025
     
-running script with error: "Proxy.py:241: SyntaxWarning: invalid escape sequence '\d'".
-    Fixed with raw string to avoid escape problem: br''.
-    Thu. 27 Mar 2025
+    3. running script with error: "Proxy.py:241: SyntaxWarning: invalid escape sequence '\d'".
+        Fixed with raw string to avoid escape problem: br''.
+        Thu. 27 Mar 2025
 
 
         
